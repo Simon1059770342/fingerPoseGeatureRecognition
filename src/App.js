@@ -33,6 +33,12 @@ function App() {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
 
+  const [emoji, setEmoji] = useState(null);
+  const images = {
+    thumbs_up: thumbs_up,
+    victory: victory,
+  };
+
   const runHandpose = async () => {
     const net = await handpose.load();
     console.log("Handpose model loaded.");
@@ -74,7 +80,24 @@ function App() {
         ]);
 
         const gesture = await GE.estimate(hand[0].landmarks, 8);
-        console.log(gesture);
+        // console.log(gesture);
+
+        // use state
+        // no confidence element in gesture.gestures
+        // if (gesture.gestures !== undefined && gesture.gestures.length > 0) {
+        //   const confidence = gesture.gestures.map(
+        //     (prediction) => prediction.confidence
+        //   );
+        //   const maxConfidence = confidence.indexOf(
+        //     Math.max.apply(null, confidence)
+        //   );
+        //   setEmoji(gesture.gestures[maxConfidence].name);
+        //   console.log(emoji);
+        // }
+        if (gesture.gestures !== undefined && gesture.gestures.length > 0) {
+          setEmoji(gesture.gestures[0].name);
+          console.log(emoji);
+        }
       }
 
       // Draw mesh
@@ -117,6 +140,23 @@ function App() {
             height: 480,
           }}
         />
+        {emoji !== null ? (
+          <img
+            src={images[emoji]}
+            style={{
+              position: "absolute",
+              marginLeft: "auto",
+              marginRight: "auto",
+              left: 400,
+              bottom: 500,
+              right: 0,
+              textAlign: "center",
+              height: 100,
+            }}
+          />
+        ) : (
+          ""
+        )}
       </header>
     </div>
   );
